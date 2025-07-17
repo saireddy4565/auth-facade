@@ -4,18 +4,19 @@ import org.example.model.AuthorizationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+import java.util.HashMap;
+
 @Service
 public class AuthorizationService {
 
-    private final RestTemplate restTemplate;
-
-    public AuthorizationService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    private static final Map<String, Boolean> MOCK_DB = new HashMap<>();
+    static {
+        MOCK_DB.put("123:read:document-456", true);
     }
 
     public boolean isAuthorized(AuthorizationRequest request) {
-        return "123".equals(request.getUserId())
-                && "read".equals(request.getAction())
-                && "document-456".equals(request.getResource());
+        String key = request.getUserId() + ":" + request.getAction() + ":" + request.getResource();
+        return MOCK_DB.getOrDefault(key, false); // Simulated downstream logic
     }
 }
